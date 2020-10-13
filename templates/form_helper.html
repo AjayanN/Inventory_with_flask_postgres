@@ -1,0 +1,13 @@
+{% macro displayField(fieldName) %}
+
+<div>
+    {{fieldName(class_ = 'form-control', **kwargs)}}
+
+    <ul>
+      {% for error in fieldName.errors %}
+        <li> {{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {% endmacro %}

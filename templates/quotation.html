@@ -1,0 +1,181 @@
+{% from 'form_helper.html' import displayField %}
+{% extends 'base.html' %}
+
+{%block title%} Quotation  {% endblock %}
+{% block head %}
+{% endblock %}
+{% block body %}
+
+<div class="container">
+    <div class="row">
+      <nav class="nav-pills col-md-2 d-none d-md-block bg-primary sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block" href="/dashboard">
+                <span data-feather="home"></span>
+                Purchases <span class="sr-only"></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block" href="/indent">
+                <span data-feather="file"></span>
+                Indents
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block active" href="/quotation">
+                <span data-feather="bar-chart-2"></span>
+                Quotation
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block" href="/stock">
+                <span data-feather="shopping-cart"></span>
+                Stock
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block" href="/issue">
+                <span data-feather="users"></span>
+                Issued
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Supplier & quotations</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                  
+                <button class="btn btn-sm btn-outline-secondary" onclick="exportTableToCSV('quotations.csv')"><span data-feather="file-text"></span>Table To CSV File</button>
+                
+                {% if logged=='admin' %}
+                <a class="btn btn-sm btn-outline-secondary" role='button' href='/register' >+ Register a new user</a>
+                {% endif %}
+                <div> 
+                <a class="btn btn-sm btn-outline-secondary " role='button' href='/logout' >+ Logout</a>
+                </div>
+                
+            </div>
+        </div>
+        </div>
+
+
+          <form action="/quotation" method="POST" class="form-group" enctype="multipart/form-data">
+            
+            {{ displayField(form.upload, placeholder = 'Upload') }}
+            
+            {{form.submit_button }}
+  
+
+            {{ form.csrf_token }}
+        </form>
+
+        {% if supplier %}
+        <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+        {% endif %}
+        
+        {% if page == 'quotation' %}
+        <h1 class="h2">Search quotation</h1>
+          <form action="/view/{{page}}" method="POST" class="form-group">
+            
+            {{ displayField(form1.search, placeholder = 'search') }}
+            <b>Date of entry from:</b> {{ displayField(form1.st_date, placeholder = 'Start date')}}
+            <b>Date of entry to:</b> {{ displayField(form1.end_date, placeholder = 'End Date')}}
+        
+        
+            {{form1.submit_button }}
+            
+            {{ form1.csrf_token }}
+        </form>
+        {% endif %}
+        
+        <h2>Details of Quotation</h2>
+          <div class="table-responsive datatable-custom">
+          <table class="table table-hover">
+            
+            <thead>
+                <th>  </th>
+                <th>Supplier</th>
+                <th>Particular</th>
+                <th>Pack_Unit</th>
+                <th>Unit_Rate</th>
+                <th>Discount</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>GST</th>
+                <th>Grand_Total</th>
+                <th>Date_of_entry</th>
+                <th>Delete</th>
+            </thead>
+            <tbody>
+              {% set count = namespace(value=1) %}
+                {%  for each in particular %}
+                
+                <tr>
+                    <td>{{ count.value }}</td>
+                    <td>{{ each.supplier}}</td>
+                    <td>{{ each.chemical_name}}</td>
+                    <td>{{ each.pack_unit}}</td>
+                    <td>{{ each.unit_rate}}</td>
+                    <td>{{ each.discount}}</td>
+                    <td>{{ each.quantity}}</td>
+                    <td>{{ each.total}}</td>
+                    <td>{{ each.gst}}</td>
+                    <td>{{ each.grand_total}}</td>
+                    <td>{{ each.date_of_entry }}</td>
+                    <td>
+                      <a href='/delete/{{page}}/{{each.id}}' class="btn btn-sm btn-dark">Delete</a>
+                    </td>
+                    {% set count.value = count.value + 1 %}
+                </tr>
+                
+                {% endfor %}
+            </tbody>
+          </table>
+          </div>  
+    </main>
+    </div>
+    </div>
+ <!-- Icons -->
+{% block script %}
+    <!-- Graphs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script>
+      suppliers = JSON.parse({{ supplier | tojson }})
+      canvas_count = JSON.parse({{ canvas | tojson }})
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: suppliers,
+          datasets: [{
+            label:'quotations for the product',
+            data: canvas_count,
+            lineTension: 0,
+            backgroundColor: 'transparent',
+            borderColor: '#007bff',
+            borderWidth: 4,
+            pointBackgroundColor: '#007bff'
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: false
+              }
+            }]
+          },
+          legend: {
+            display: false,
+          }
+        }
+      });
+    </script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,173 @@
+{% from 'form_helper.html' import displayField %}
+{% extends 'base.html' %}
+
+{%block title%} Stock {% endblock %}
+{% block head %}
+
+
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+      <div class="row">
+        <nav class="nav-pills col-md-2 d-none d-md-block bg-primary sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class = "btn btn-primary btn-lg btn-block" role="button" aria-pressed="true" href="/dashboard">
+                  <span data-feather="home"></span>
+                  Purchases <span class="sr-only"></span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary btn-lg btn-block" href="/indent">
+                  <span data-feather="file"></span>
+                  Indents  
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary btn-lg btn-block" href="/quotation">
+                  <span data-feather="bar-chart-2"></span>
+                  Quotation
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary btn-lg btn-block active" href="/stock">
+                  <span data-feather="shopping-cart"></span>
+                  Stock
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary btn-lg btn-block" href="/issue">
+                  <span data-feather="users"></span>
+                  Issued
+                </a>
+              </li>
+              <!-- <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="users"></span>
+                  Customers
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="layers"></span>
+                  Integrations
+                </a>
+              </li> -->
+            </ul>
+          </div>
+        </nav>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <!-- <div>
+        
+                <a class="btn btn-danger float-right " role='button' href='/logout' >+ Logout</a>
+                
+                {% if page=='admin' %}
+                <a class="btn btn-danger float-right mr-2" role='button' href='/register' >+ Register a new user</a>
+                {% endif %}
+            
+            </div> -->
+
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Stock available</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+            <button class="btn btn-sm btn-outline-secondary" onclick="exportTableToCSV('stock_details.csv')"><span data-feather="file-text"></span>Table To CSV File</button>
+            {% if logged=='admin' %}
+            <a class="btn btn-sm btn-outline-secondary" role='button' href='/register' >+ Register a new user</a>
+            {% endif %}
+            <div>
+            <a class="btn btn-sm btn-outline-secondary " role='button' href='/logout' >+ Logout</a>
+            </div>
+          </div> 
+        
+        </div>
+        </div>
+          {% if supplier %}
+          <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+          {% endif %}
+
+          
+
+          <h1 class="h2">Search Indent</h1>
+          <form action="/stock" method="POST" class="form-group">
+          
+          {{ displayField(form1.search, placeholder = 'search') }}
+
+          <!-- <b>Indent date from:</b> {{ displayField(form1.st_date, placeholder = 'Start date')}}
+          <b>Indent date to:</b> {{ displayField(form1.end_date, placeholder = 'End Date')}} -->
+        
+      
+          {{form1.submit_button }}
+          
+          {{ form1.csrf_token }}
+          </form>
+          <h2>Stock</h2>
+          {%if particulars %}
+          <div class="table-responsive">
+            
+            <table class="table table-hover">
+                <thead>
+                    
+                    <th>Particular</th>
+                    <th>Stock</th>
+                    <th>Unit</th>
+                    <th>Brand</th>
+
+                </thead>
+                <tbody>
+                    {% for each in particulars %}
+                    <tr>
+                        <td>{{ each[1].split(':')[0] }}</td>
+                        <td>{{ each[0] }}</td>
+                        <td>{{ each[3] }}</td>
+                        <td>{{ each[2] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+          </div>
+          {% endif %}
+        </main>
+      </div>
+    </div>
+    {% block script %} 
+    <!-- Graphs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script>
+      suppliers = JSON.parse({{ supplier | tojson }})
+      canvas_count = JSON.parse({{ canvas | tojson }})
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: suppliers,
+          datasets: [{
+            label:'stock',
+            data: canvas_count,
+            lineTension: 0,
+            backgroundColor: 'transparent',
+            borderColor: '#007bff',
+            borderWidth: 4,
+            pointBackgroundColor: '#007bff'
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: false
+              }
+            }]
+          },
+          legend: {
+            display: false,
+          }
+        }
+      });
+    </script>
+    
+    
+  {% endblock %}
+{% endblock %}

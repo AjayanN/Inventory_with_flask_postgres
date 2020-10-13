@@ -1,0 +1,390 @@
+{% from 'form_helper.html' import displayField %}
+{% extends 'base.html' %}
+
+{%block title%}{%if page=='dashboard' %}Purchases {%elif page=='indent' %}Intend
+{%elif page=='issued' %}Issue   {% endif %} {% endblock %}
+
+
+{% block head %}
+
+
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+      <div class="row">
+        <nav class="nav-pills col-md-2 d-none d-md-block bg-primary sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                
+                <a class = "btn btn-primary btn-lg btn-block{% if page == 'dashboard' %} active{%endif%}" role="button" aria-pressed="true" href="/dashboard">
+                  <span data-feather="home"></span>
+                  Purchases <span class="sr-only"></span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary btn-lg btn-block{% if page == 'indent' %} active{%endif%}" href="/indent">
+                  <span data-feather="file"></span>
+                  Indents  
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary btn-lg btn-block" href="/quotation">
+                  <span data-feather="bar-chart-2"></span>
+                  Quotation
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary btn-lg btn-block" href="/stock">
+                  <span data-feather="shopping-cart"></span>
+                  Stock
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary btn-lg btn-block{% if page == 'issued' %} active{%endif%}" href="/issue">
+                  <span data-feather="users"></span>
+                  Issued
+                </a>
+              </li>
+
+              <!-- <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="layers"></span>
+                  Integrations
+                </a>
+              </li>  -->
+            </ul>
+          </div>
+        </nav>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <!-- <div>
+        
+                <a class="btn btn-danger float-right " role='button' href='/logout' >+ Logout</a>
+                
+                {% if page=='admin' %}
+                <a class="btn btn-danger float-right mr-2" role='button' href='/register' >+ Register a new user</a>
+                {% endif %}
+            
+            </div> -->
+
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        {% if page == 'dashboard' %}<h1 class="h2">Supplier & purchases</h1>{%endif%}
+        {% if page == 'indent' %}<h1 class="h2">No of indents</h1>{%endif%}
+        {% if page == 'issued' %}<h1 class="h2">No of issues</h1>{%endif%}
+        
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+            <button class="btn btn-sm btn-outline-secondary" onclick="exportTableToCSV('purchases.csv')"><span data-feather="file-text"></span>Table To CSV File</button>
+            {% if logged=='admin' %}
+            <a class="btn btn-sm btn-outline-secondary" role='button' href='/register' >+ Register a new user</a>
+            {% endif %}
+            <div>
+            <a class="btn btn-sm btn-outline-secondary " role='button' href='/logout' >+ Logout</a>
+            </div>
+            <!-- <div class="dropdown">
+              <a class="btn btn-sm btn-outline-secondary dropdown-toggle" role='button' data-toggle="dropdown">
+                <span data-feather="calendar"></span>
+                Date preferences
+              </a>
+              <div class="dropdown-menu">
+                
+              </div>
+            </div> -->
+          </div> 
+        
+        </div>
+        </div>
+          {% if supplier %}
+          <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+          {% endif %}
+
+          {% if page == 'dashboard' %}
+          <h1 class="h2">Insert particular</h1>
+            <form action="/dashboard" method="POST" class="form-group">
+                
+                <br>
+                    {{ displayField(form.invoice_no, placeholder = 'Invoice No')}}
+
+                    <b>Purchased:</b> {{ displayField(form.date_purchase, placeholder = 'Date of purchase', autocomplete="off",
+                    autofocus=true)}}
+                    
+                    {{ displayField(form.particular_name, placeholder = 'Particular Name')}}
+                    
+                    {{ displayField(form.quantity, placeholder = 'Quantity')}}
+
+                    {{ displayField(form.pack_unit, placeholder = 'Pack Unit')}}
+                
+
+                    {{ displayField(form.price, placeholder = 'Price')}}
+                
+                    {{ displayField(form.supplier, placeholder = 'Supplier')}}
+                
+                    {{ displayField(form.brand, placeholder = 'Brand')}}
+
+                    {{form.submit_button }}
+                    
+                    {{ form.csrf_token }}
+            </form>
+            {% elif page == 'indent' %}
+            <h1 class="h2">Insert indent</h1>
+            <form action="/indent" method="POST" class="form-group">
+                
+                <br>
+                    {{ displayField(form.indent_no, placeholder = 'Indent No')}}
+
+                    {{ displayField(form.department, placeholder = 'Department', autocomplete="off",
+                    autofocus=true)}}
+                    
+                    {{ displayField(form.particular_name, placeholder = 'Particular Name')}}
+                    
+                    {{ displayField(form.quantity, placeholder = 'Quantity')}}
+                
+                    <b>Indent date:</b>{{ displayField(form.indent_dt, placeholder = 'Indent date')}}
+                
+                    {{ displayField(form.lab_or_class, placeholder = 'Lab/Class Name')}}
+                
+                    {{form.submit_button }}
+                    
+                    {{ form.csrf_token }}
+            </form>
+            {% elif page == 'issued' %}
+            <h1 class="h2">Insert Issue details</h1>
+            <form action="/issue" method="POST" class="form-group">
+                
+                <br>
+                <b>Indent No:</b>{{ displayField(form.indent_no, placeholder = 'Indent no')}}
+
+                <b>Issue Date:</b> {{ displayField(form.issue_dt, placeholder = 'Date of issue', autocomplete="off",
+                autofocus=true)}}
+                
+                <b>Particular Name:</b>{{ displayField(form.particular_name, placeholder = 'Particular Name')}}
+                
+                {{ displayField(form.quantity, placeholder = 'Quantity')}}
+
+                {{ displayField(form.price, placeholder = 'Price')}}
+            
+                <b>Brand:</b>{{ displayField(form.brand, placeholder = 'Brand')}}
+
+                {{form.submit_button }}
+                
+                {{ form.csrf_token }}
+            </form>
+            {% endif %}
+        
+        {% if page == 'dashboard' %}
+        <h1 class="h2">Search particular</h1>
+          <form action="/view/{{page}}" method="POST" class="form-group">
+            
+            {{ displayField(form1.search, placeholder = 'search') }}
+            <b>Purchased date from:</b> {{ displayField(form1.st_date, placeholder = 'Start date')}}
+            <b>Purchased date to:</b> {{ displayField(form1.end_date, placeholder = 'End Date')}}
+        
+            {{form1.submit_button }}
+            
+            {{ form1.csrf_token }}
+        </form>
+        {% elif page == 'indent' %}
+        <h1 class="h2">Search Indent</h1>
+        <form action="/view/{{page}}" method="POST" class="form-group">
+          
+          {{ displayField(form1.search, placeholder = 'search') }}
+
+          <b>Indent date from:</b> {{ displayField(form1.st_date, placeholder = 'Start date')}}
+          <b>Indent date to:</b> {{ displayField(form1.end_date, placeholder = 'End Date')}}
+        
+      
+          {{form1.submit_button }}
+          
+          {{ form1.csrf_token }}
+      </form>
+      {% elif page == 'issued' %}
+      <h1 class="h2">Search Issued details</h1>
+      <form action="/view/{{page}}" method="POST" class="form-group">
+        
+        {{ displayField(form1.search, placeholder = 'search') }}
+
+        <b>Issue date from:</b> {{ displayField(form1.st_date, placeholder = 'Start date')}}
+        <b>Issue date to:</b> {{ displayField(form1.end_date, placeholder = 'End Date')}}
+      
+    
+        {{form1.submit_button }}
+        
+        {{ form1.csrf_token }}
+    </form>
+        {% endif %}
+        
+        {% if page == 'dashboard' %}
+          <h2>Details of particulars</h2>
+          
+          <div class="table-responsive">
+            
+            <table class="table table-hover">
+                <thead>
+                    <th>
+                      Invoice_no
+                    </th>
+                    <th>Purchased</th>
+                    <th>Particular</th>
+                    <th>Quantity</th>
+                    <th>Pack_unit</th>
+                    <th>Price</th>
+                    <th>Supplier</th>
+                    <th>Brand</th>
+                    <!-- <th>Update</th> -->
+                    <th>Delete</th>
+    
+                </thead>
+                <tbody>
+                    {% for each in particulars %}
+                    <tr>
+                        <td>{{ each.invoice_no }}</td>
+                        <td>{{ each.date_purchase }}</td>
+                        <td>{{ each.particular_name }}</td>
+                        <td>{{ each.quantity }}</td>
+                        <td>{{ each.pack_unit }}</td>
+                        <td>{{ each.price }}</td>
+                        <td>{{ each.supplier }}</td>
+                        <td>{{ each.brand }}</td>
+                        <!-- <td>
+                            <a href='/update/{{page}}/{{each.id}}' class="btn btn-sm btn-dark">Update</a>
+                        </td> -->
+                        <td>
+                            <a href='/delete/{{page}}/{{each.id}}' class="btn btn-sm btn-dark">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% elif page == 'indent' %}
+            <h2>Details of Indent</h2>
+          
+            <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                  <th>Indent_no</th>
+                  <th>Department</th>
+                  <th>Particular</th>
+                  <th>Quantity</th>
+                  <th>Indent_dt</th>
+                  <th>Lab/Class</th>
+                  <!-- <th>Update</th> -->
+                  <th>Delete</th>
+              </thead>
+              <tbody>
+                  {% for each in particulars %}
+                  <tr>  
+                      <td>{{ each.indent_no }}</td>
+                      <td>{{ each.department }}</td>
+                      <td>{{ each.particular_name }}</td>
+                      <td>{{ each.quantity }}</td>
+                      <td>{{ each.indent_dt }}</td>
+                      <td>{{ each.lab_or_class }}</td>
+                      <!-- <td>
+                          <a href='/update/{{page}}/{{each.id}}' class="btn btn-sm btn-dark">Update</a>
+                      </td> -->
+                      <td>
+                          <a href='/delete/{{page}}/{{each.id}}' class="btn btn-sm btn-dark">Delete</a>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+          
+          </div>
+          {% elif page == 'issued' %}
+            <h2>Details of Issued items</h2>
+          
+            <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <th>
+                  Indent_no
+                </th>
+                <th>Issue_dt</th>
+                <th>Particular</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Brand</th>
+                <th>Return</th>
+                <!-- <th>Delete</th> -->
+
+            </thead>
+              <tbody>
+                {% for each in particulars %}
+                <tr>
+                    <td>{{ each.indent_no }}</td>
+                    <td>{{ each.issue_dt }}</td>
+                    <td>{{ each.particular_name }}</td>
+                    <td>{{ each.quantity }}</td>
+                    <td>{{ each.price }}</td>
+                    <td>{{ each.brand }}</td>
+                    <td>
+                        <a href='/update/{{page}}/{{each.id}}' class="btn btn-sm btn-dark">Update</a>
+                    </td>
+                    <!-- <td>
+                        <a href='/delete/{{page}}/{{each.id}}' class="btn btn-sm btn-dark">Delete</a>
+                    </td> -->
+                </tr>
+                {% endfor %}
+              </tbody>
+          </table>
+          
+          </div>
+          {% endif %}
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <!-- Icons -->
+    
+    {% block script %} 
+    <!-- Graphs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script>
+      suppliers = JSON.parse({{ supplier | tojson }})
+      canvas_count = JSON.parse({{ canvas | tojson }})
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: suppliers,
+          datasets: [{
+            {%if page=='dashboard'%}
+            label:'purchases from supplier',
+            {%elif page=='indent' %}
+            label:'indents',
+            {%elif page=='issued' %}
+            label:'Issues for the product',
+            {% endif %}
+            data: canvas_count,
+            lineTension: 0,
+            backgroundColor: 'transparent',
+            borderColor: '#007bff',
+            borderWidth: 4,
+            pointBackgroundColor: '#007bff'
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: false
+              }
+            }]
+          },
+          legend: {
+            display: false,
+          }
+        }
+      });
+    </script>
+    
+    
+  {% endblock %}
+{% endblock %}
+

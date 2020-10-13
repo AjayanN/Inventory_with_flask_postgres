@@ -1,0 +1,112 @@
+{% from 'form_helper.html' import displayField %}
+{% extends 'base.html' %}
+
+{%block title%} Update  {% endblock %}
+{% block head %}
+
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    <nav class="nav-pills col-md-2 d-none d-md-block bg-primary sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class = "btn btn-primary btn-lg btn-block" role="button" aria-pressed="true" href="/dashboard">
+                <span data-feather="home"></span>
+                Particulars <span class="sr-only"></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block" href="/indent">
+                <span data-feather="file"></span>
+                Indents  
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block" href="/quotation">
+                <span data-feather="shopping-cart"></span>
+                Quotation
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block" href="/stock">
+                <span data-feather="shopping-cart"></span>
+                Stock
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary btn-lg btn-block" href="/issue">
+                <span data-feather="users"></span>
+                Issued
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+{% if page == 'dashboard' %}
+        <h2> Update the details of the particulars</h2>
+        <form action="/update/{{page}}/{{particular.id}}" method="POST" class="form-group">
+        <br>
+        <br>
+        <b>Date of purchase</b> {{ displayField(form.date_purchase, autocomplete="off",
+            autofocus=true, value = particular.date_purchase )}}
+            
+        <b>Particular Name</b> {{ displayField(form.particular_name,autocomplete="on", value =particular.particular_name)}}
+            
+        <b>Quantity</b> {{ displayField(form.quantity, value = particular.quantity)}}
+
+        <b>Price</b> {{ displayField(form.price, value = particular.price)}}
+
+        <b>Supplier</b> {{ displayField(form.supplier,autocomplete="on", value = particular.supplier)}}
+
+        <b>Issued On</b> {{ displayField(form.date_of_issue,value = particular.date_of_issue)}}
+
+            {{form.submit_button }} 
+
+            {{ form.csrf_token }}
+        </form>
+{% elif page=='indent' %}
+        <h2> Update the details of the Indent</h2>
+        <form action="/update/{{page}}/{{particular.id}}" method="POST" class="form-group">
+        
+        <br>
+        <br>
+        <b>Department</b> {{ displayField(form.department, placeholder = 'Department', autocomplete="off",
+        autofocus=true,value = particular.department)}}
+
+        <b>Particular Name</b>{{ displayField(form.particular_name, placeholder = 'Particular Name',value = particular.particular_name)}}
+
+        <b>Quantity</b>{{ displayField(form.quantity, placeholder = 'Quantity',value = particular.quantity)}}
+
+        <b>Indent date:</b>{{ displayField(form.indent_dt, placeholder = 'Indent date',value = particular.indent_dt)}}
+
+        <b>Lab/Class</b>{{ displayField(form.lab_or_class, placeholder = 'Lab/Class Name',value = particular.lab_or_class)}}
+
+        {{form.submit_button }}
+
+        {{ form.csrf_token }}
+
+        </form>
+{% elif page=='issued' %}
+        <h2> Update the details of the Issue</h2>
+        <form action="/update/{{page}}/{{particular.id}}" method="POST" class="form-group">
+        
+        <br>
+        <br>
+        <b>Quantity</b> {{ displayField(form.quantity, value = particular.quantity)}}
+        {{form.submit_button }}
+
+        {{ form.csrf_token }}
+
+        </form>
+
+{% endif %}
+</main>
+</div>
+</div>
+{% endblock %}

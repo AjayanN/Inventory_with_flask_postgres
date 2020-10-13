@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{%block title%}{% endblock %} - inventory</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/dashboard/">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" >
+
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.1/examples/dashboard/dashboard.css" type= "text/css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-wrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/dashboard">Inventory </a>
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="btn btn-sm btn-outline-secondary " href="/about">About me</a>
+        </li>
+      </ul>
+      
+    </nav>
+
+      <div class="container" width="600" height="380">
+      
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {%if messages%}
+          <br>
+          
+          <div class="alert alert-{{ messages[0][0] }} " role="alert">
+            {{ messages[0][1] }}
+          </div>
+          {% endif %}
+        {% endwith%}
+        
+        </div>
+        {% block body %} {% endblock %}
+
+    
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="static/styles/js/jquery-slim.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://getbootstrap.com/docs/4.1/dist/js/bootstrap.min.js"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+    {% block script %} {% endblock %}
+    <script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+      
+          var url = 'http://127.0.0.1:5001/GUI-is-still-open'; 
+          fetch(url, { mode: 'no-cors'});
+          setInterval(function(){ fetch(url, { mode: 'no-cors'});}, 5000)();
+      
+      });
+      
+      </script>
+    <script>
+      function downloadCSV(csv, filename) {
+        var csvFile;
+        var downloadLink;
+    
+        // CSV file
+        csvFile = new Blob([csv], {type: "text/csv"});
+    
+        // Download link
+        downloadLink = document.createElement("a");
+    
+        // File name
+        downloadLink.download = filename;
+    
+        // Create a link to the file
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+    
+        // Hide download link
+        downloadLink.style.display = "none";
+    
+        // Add the link to DOM
+        document.body.appendChild(downloadLink);
+    
+        // Click download link
+        downloadLink.click();
+    }
+    
+      function exportTableToCSV(filename) {
+      var csv = [];
+      var rows = document.querySelectorAll("table tr");
+      
+      for (var i = 0; i < rows.length; i++) {
+          var row = [], cols = rows[i].querySelectorAll("td, th");
+          
+          for (var j = 0; j < cols.length; j++) 
+              row.push(cols[j].innerText);
+          
+          csv.push(row.join(","));        
+      }
+  
+      // Download CSV file
+      downloadCSV(csv.join("\n"), filename);
+  }
+      function reallySure (event) {
+        var message = 'Are you sure about that?';
+        action = confirm(message) ? true : event.preventDefault();
+        }
+        
+        function actionToFunction (event) {
+            switch (event.target.className.toLowerCase()) {
+                case 'btn btn-sm btn-dark' :
+                    reallySure(event);
+                    break;
+                default:
+                    break;
+            }
+        }
+        document.body.addEventListener('click', actionToFunction);
+  </script>
+    
+  </body>
+</html>
